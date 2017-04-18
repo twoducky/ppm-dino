@@ -89,7 +89,8 @@ class StateSystem:
         self.sm = system_manager
         self.sm.subscribe({'state_change': self.change_state})
 
-    def change_state(self, (eid, state)):
+    def change_state(self, eidNstate):
+        eid, state = eidNstate
         renderee = self.em.get_component_of_class(mc.Render, eid)
         renderee.state = state
 
@@ -100,7 +101,8 @@ class DinoSystem:
         self.sm = system_manager
         self.sm.subscribe({'collision': self.collide})
 
-    def collide(self, (collidee, collider)):
+    def collide(self, colObs):
+        collidee, collider = colObs
         dino = self.em.get_component_of_class(mc.Dino, collidee)
         if dino:
             self.sm.game_state = 'game_over'
@@ -121,7 +123,8 @@ class JumpSystem:
         self.sm.subscribe({'state_change': self.jump})
         self.world = world
 
-    def jump(self, (eid, state)):
+    def jump(self,  eidNstate):
+        eid, state = eidNstate
         jumper = self.em.get_component_of_class(mc.Jump, eid)
         if jumper and state is 'Jump':
             position = self.em.get_component_of_class(mc.Position, eid).position
@@ -162,7 +165,7 @@ class CactusSystem:
     def create_cactus(self):
         cactus_id = self.em.create_new_entity()
         chance = random.randint(0, 10)
-        state = self.cactus.render['States'].keys()[chance]
+        state = list(self.cactus.render['States'].keys())[chance]
 
         self.em.add_component(mc.Render(self.cactus.render), cactus_id)
         self.em.add_component(mc.Movement(self.cactus.movement), cactus_id)
@@ -201,7 +204,8 @@ class GUISystem:
         self.srf = screen
         self.sm.subscribe({'render_box': self.render_box})
 
-    def render_box(self, (box_min_x, box_min_y, box_max_x, box_max_y)):
+    def render_box(self, box):
+        box_min_x, box_min_y, box_max_x, box_max_y = box
         pygame.draw.rect(self.srf, (255, 255, 255),
                          (box_min_x, box_max_y, box_max_x - box_min_x, box_min_y - box_max_y), 2)
 
@@ -236,7 +240,9 @@ class ColliderSystem:
                                         (collider_position, renderer_width, renderer_height)):
                     self.sm.push_events('collision', (collidee, collider))
 
-    def check_collision(self, (box1_min_x, box1_min_y, box1_max_x, box1_max_y), (box2_pos, box2_width, box2_height)):
+    def check_collision(self, box1, box2):
+        box1_min_x, box1_min_y, box1_max_x, box1_max_y = box1
+        box2_pos, box2_width, box2_height = box2
         box2_min_x = box2_pos[0]
         box2_min_y = box2_pos[1]
         box2_max_x = box2_pos[0] + box2_width

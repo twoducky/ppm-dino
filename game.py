@@ -129,10 +129,10 @@ while loop_flag:
 
     # Show Collisions
     if show_collisions:
-        text = 'Show Collisions: ON'
+        text = "'C': Show Collisions: ON"
         color = (238, 130, 238)
     else:
-        text = 'Show Collisions: OFF'
+        text = "'C': Show Collisions: OFF"
         color = (200, 200, 200)
     surface = font.render(text, True, color)
     srf.blit(surface, (1000, 20))
